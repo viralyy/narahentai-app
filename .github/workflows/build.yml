@@ -23,9 +23,14 @@ jobs:
       - name: Clone WebView Template
         run: git clone https://github.com/zabixii/Webview-apk template
 
-      - name: Replace URL
+      - name: Replace URL everywhere
         run: |
-          sed -i 's|https://example.com|https://narahentai.pages.dev|g' template/app/src/main/java/com/example/webviewapk/MainActivity.java
+          set -e
+          find template -type f -name "*.java" -o -name "*.kt" -o -name "*.xml" -o -name "*.gradle" | while read f; do
+            sed -i 's|https://example.com|https://narahentai.pages.dev|g' "$f" || true
+            sed -i 's|http://example.com|https://narahentai.pages.dev|g' "$f" || true
+            sed -i 's|example.com|narahentai.pages.dev|g' "$f" || true
+          done
 
       - name: Build APK
         run: |
