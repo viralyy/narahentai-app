@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#0B0B0F">
 
-    <!-- TOP BAR -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
@@ -14,13 +13,11 @@
         android:background="#0B0B0F"
         app:title="Narahentai"
         app:titleTextColor="@android:color/white"
-        app:navigationIcon="@drawable/ic_logo"
-        app:navigationIconTint="@android:color/white"
+        app:titleCentered="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- FRAGMENT CONTAINER (BUKAN NavHostFragment) -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
@@ -30,13 +27,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- BOTTOM NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:background="#0B0B0F"
         app:itemIconSize="28dp"
+        app:itemTextColor="@color/bottom_nav_text"
+        app:itemIconTint="@color/bottom_nav_icon"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
