@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,10 +16,19 @@ import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
 
+    public interface OnVideoClick {
+        void onClick(VideoItem item);
+    }
+
     private final List<VideoItem> items;
+    private OnVideoClick onVideoClick;
 
     public VideoAdapter(List<VideoItem> items) {
         this.items = items;
+    }
+
+    public void setOnVideoClick(OnVideoClick cb) {
+        this.onVideoClick = cb;
     }
 
     @NonNull
@@ -35,10 +43,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         VideoItem it = items.get(position);
 
-        String dur = it.durationText();
         h.txtTitle.setText(it.title);
-        h.txtMeta.setText(it.views + " views • " + dur);
-        h.txtDuration.setText(dur);
+        h.txtMeta.setText(it.views + " views • " + it.durationText());
+        h.txtDuration.setText(it.durationText());
 
         Glide.with(h.itemView.getContext())
                 .load(it.thumbnailUrl)
@@ -46,16 +53,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
                 .into(h.imgThumb);
 
         h.itemView.setOnClickListener(v -> {
-            String url = it.playableUrl();
-            if (url.isEmpty()) {
-                Toast.makeText(v.getContext(), "Video URL kosong. Cek API video_url.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            PlayerActivity.open(v.getContext(), url, it.title, it.views + " views • " + dur);
+            if (onVideoClick != null) onVideoClick.onClick(it);
         });
 
         h.btnMore.setOnClickListener(v -> {
-            // nanti popup menu
+            // nanti kalau mau: popup menu
         });
     }
 
