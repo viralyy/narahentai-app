@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#0B0B0F">
 
-    <!-- Top App Bar -->
+    <!-- Top App Bar (simple, YouTube-ish) -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -50,38 +50,41 @@
         android:progress="0"
         android:visibility="gone"/>
 
-    <!-- WebView -->
+    <!-- WebView (konten web) -->
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp"
-        android:layout_marginBottom="56dp" />
+        android:layout_marginBottom="@dimen/bottom_nav_height" />
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (✅ bigger like YouTube) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
         android:background="#0B0B0F"
+        app:itemIconSize="@dimen/bottom_nav_icon_size"
+        app:itemTextAppearanceActive="@style/BottomNavYouTube"
+        app:itemTextAppearanceInactive="@style/BottomNavYouTube"
         app:itemIconTint="#F3F4FF"
         app:itemTextColor="#F3F4FF"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"/>
 
-    <!-- ✅ Player BottomSheet (dibuat NAIK 56dp supaya gak ketutup bottomNav) -->
+    <!-- Player BottomSheet (✅ naik setinggi bottom nav supaya gak ketutup) -->
     <LinearLayout
         android:id="@+id/playerSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="@dimen/bottom_nav_height"
         android:orientation="vertical"
         android:background="#0B0B0F"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <!-- Mini bar -->
+        <!-- Mini bar (YouTube style) -->
         <LinearLayout
             android:id="@+id/miniBar"
             android:layout_width="match_parent"
@@ -147,7 +150,7 @@
                 android:contentDescription="Close"/>
         </LinearLayout>
 
-        <!-- Player -->
+        <!-- Player native -->
         <androidx.media3.ui.PlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
