@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- App theme basic -->
-    <style name="Theme.Narahentai" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#0B0B0F</item>
-        <item name="colorPrimaryVariant">#0B0B0F</item>
-        <item name="colorSecondary">#5F42FF</item>
-        <item name="android:statusBarColor">#0B0B0F</item>
-        <item name="android:navigationBarColor">#0B0B0F</item>
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/nav_bg</item>
     </style>
 
-    <!-- Text size for BottomNavigation (active + inactive) -->
-    <style name="BottomNavYouTube" parent="">
-        <item name="android:textSize">@dimen/bottom_nav_text_size</item>
+    <style name="NavText">
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>
