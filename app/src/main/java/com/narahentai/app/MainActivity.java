@@ -2,9 +2,7 @@ package com.narahentai.app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -14,7 +12,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private MaterialToolbar topAppBar;
-    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,12 +19,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         topAppBar = findViewById(R.id.topAppBar);
-        bottomNav = findViewById(R.id.bottomNav);
 
-        // pastiin menu toolbar ada (search doang)
+        // menu search (kanan)
         topAppBar.getMenu().clear();
         topAppBar.inflateMenu(R.menu.top_appbar_menu);
-
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_search) {
                 startActivity(new Intent(this, SearchActivity.class));
@@ -36,38 +31,38 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // default page
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
         if (savedInstanceState == null) {
+            topAppBar.setTitle("Narahentai");
+            switchFragment(new HomeFragment());
             bottomNav.setSelectedItemId(R.id.nav_home);
-            openTab(R.id.nav_home);
         }
 
         bottomNav.setOnItemSelectedListener(item -> {
-            openTab(item.getItemId());
-            return true;
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                topAppBar.setTitle("Narahentai");
+                switchFragment(new HomeFragment());
+                return true;
+
+            } else if (id == R.id.nav_update) {
+                topAppBar.setTitle("Update");
+                switchFragment(new UpdateFragment());
+                return true;
+
+            } else if (id == R.id.nav_profile) {
+                topAppBar.setTitle("Profil");
+                switchFragment(new ProfileFragment());
+                return true;
+            }
+
+            return false;
         });
     }
 
-    private void openTab(int menuId) {
-        Fragment fragment;
-        String title;
-
-        if (menuId == R.id.nav_home) {
-            title = "Narahentai";
-            fragment = new HomeFragment();
-        } else if (menuId == R.id.nav_update) {
-            title = "Update";
-            fragment = new UpdateFragment();
-        } else if (menuId == R.id.nav_history) {
-            title = "Riwayat";
-            fragment = new HistoryFragment();
-        } else { // nav_profile
-            title = "Profil";
-            fragment = new ProfileFragment();
-        }
-
-        topAppBar.setTitle(title);
-
+    private void switchFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
