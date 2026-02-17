@@ -1,7 +1,7 @@
 package com.narahentai.app;
 
-import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +29,24 @@ public class HomeFragment extends Fragment {
 
         List<VideoItem> list = new ArrayList<>();
         VideoAdapter adapter = new VideoAdapter(list);
+
+        // ✅ click -> buka player
+        adapter.setOnVideoClick(item -> {
+            String url = item.playableUrl();
+            if (url == null || url.trim().isEmpty()) {
+                Toast.makeText(requireContext(),
+                        "Video URL kosong. Pastikan API ngirim video_url / video_id",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            PlayerActivity.open(
+                    requireContext(),
+                    url,
+                    item.title,
+                    item.views + " views • " + item.durationText()
+            );
+        });
+
         rv.setAdapter(adapter);
 
         ExecutorService pool = Executors.newSingleThreadExecutor();
@@ -41,7 +59,10 @@ public class HomeFragment extends Fragment {
                     list.addAll(items);
                     adapter.notifyDataSetChanged();
                 });
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            } finally {
+                pool.shutdown();
+            }
         });
     }
 }
