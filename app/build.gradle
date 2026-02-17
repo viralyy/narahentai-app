@@ -14,13 +14,28 @@ android {
         versionName "1.0"
     }
 
+    // ✅ Signing config (ambil dari ENV di GitHub Actions)
+    signingConfigs {
+        release {
+            // keystore dibuat workflow di root project => ../
+            storeFile file("../narahentai.keystore")
+            storePassword System.getenv("KS_PASS")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASS")
+        }
+    }
+
     buildTypes {
+        debug {
+            debuggable true
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-        }
-        debug {
-            debuggable true
+
+            // ✅ ini yang bikin release jadi SIGNED
+            signingConfig signingConfigs.release
         }
     }
 
@@ -35,7 +50,7 @@ dependencies {
     implementation "com.google.android.material:material:1.11.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
-    // ExoPlayer (Media3) - stable
+    // ExoPlayer (Media3)
     implementation "androidx.media3:media3-exoplayer:1.1.1"
     implementation "androidx.media3:media3-ui:1.1.1"
 }
