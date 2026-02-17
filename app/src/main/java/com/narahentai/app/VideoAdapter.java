@@ -17,19 +17,10 @@ import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
 
-    public interface OnVideoClick {
-        void onClick(VideoItem item);
-    }
-
     private final List<VideoItem> items;
-    private OnVideoClick onVideoClick;
 
     public VideoAdapter(List<VideoItem> items) {
         this.items = items;
-    }
-
-    public void setOnVideoClick(OnVideoClick cb) {
-        this.onVideoClick = cb;
     }
 
     @NonNull
@@ -44,7 +35,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         VideoItem it = items.get(position);
 
-        String dur = it.durationText(); // ✅ method
+        String dur = it.durationText();
         h.txtTitle.setText(it.title);
         h.txtMeta.setText(it.views + " views • " + dur);
         h.txtDuration.setText(dur);
@@ -55,28 +46,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
                 .into(h.imgThumb);
 
         h.itemView.setOnClickListener(v -> {
-            // ✅ pastiin URL playable ada
             String url = it.playableUrl();
-            if (url == null || url.trim().isEmpty()) {
-                Toast.makeText(v.getContext(), "Video URL kosong (cek API: video_url / video_id)", Toast.LENGTH_SHORT).show();
+            if (url.isEmpty()) {
+                Toast.makeText(v.getContext(), "Video URL kosong. Cek API video_url.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            if (onVideoClick != null) {
-                onVideoClick.onClick(it);
-            } else {
-                // fallback: langsung buka player kalau lu belum set callback di fragment
-                PlayerActivity.open(
-                        v.getContext(),
-                        url,
-                        it.title,
-                        it.views + " views • " + dur
-                );
-            }
+            PlayerActivity.open(v.getContext(), url, it.title, it.views + " views • " + dur);
         });
 
         h.btnMore.setOnClickListener(v -> {
-            // nanti bisa popup menu
+            // nanti popup menu
         });
     }
 
