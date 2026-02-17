@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -19,18 +19,18 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      # Pakai Gradle Wrapper dari repo (bukan install gradle manual)
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
       - name: Restore keystore from secret
         run: |
           echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
 
-      - name: Build Release (unsigned)
-        run: |
-          chmod +x ./gradlew
-          ./gradlew assembleRelease --no-daemon
+      - name: Build release (unsigned)
+        run: ./gradlew :app:assembleRelease --no-daemon
 
+      # Zipalign + apksigner (v2/v3) biar APK valid
       - name: Zipalign + Sign (v2/v3)
         env:
           KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -39,30 +39,27 @@ jobs:
         run: |
           UNSIGNED="app/build/outputs/apk/release/app-release-unsigned.apk"
           ALIGNED="app-release-aligned.apk"
-          SIGNED="narahentai.apk"
+          SIGNED="narahentai-release.apk"
 
-          # Cari build-tools terbaru
-          BUILD_TOOLS="$(ls -1 $ANDROID_HOME/build-tools | sort -V | tail -n 1)"
-          ZIPALIGN="$ANDROID_HOME/build-tools/$BUILD_TOOLS/zipalign"
-          APKSIGNER="$ANDROID_HOME/build-tools/$BUILD_TOOLS/apksigner"
+          # cari build-tools terbaru
+          BUILD_TOOLS_DIR="$(ls -d $ANDROID_SDK_ROOT/build-tools/* | sort -V | tail -n 1)"
+          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
+          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
 
-          # zipalign dulu
-          "$ZIPALIGN" -p 4 "$UNSIGNED" "$ALIGNED"
+          "$ZIPALIGN" -v -p 4 "$UNSIGNED" "$ALIGNED"
 
-          # sign v2/v3
           "$APKSIGNER" sign \
             --ks narahentai.keystore \
-            --ks-pass pass:"$KS_PASS" \
             --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass pass:"$KS_PASS" \
             --key-pass pass:"$KEY_PASS" \
             --out "$SIGNED" \
             "$ALIGNED"
 
-          # verify biar yakin valid
           "$APKSIGNER" verify --verbose "$SIGNED"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: narahentai-apk
-          path: narahentai.apk
+          name: narahentai-release
+          path: narahentai-release.apk
