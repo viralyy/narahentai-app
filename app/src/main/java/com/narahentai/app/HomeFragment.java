@@ -35,6 +35,7 @@ public class HomeFragment extends Fragment {
         pool.submit(() -> {
             try {
                 List<VideoItem> items = ApiClient.fetchPosts(API);
+                if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> {
                     list.clear();
                     list.addAll(items);
