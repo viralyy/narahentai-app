@@ -1,37 +1,63 @@
 package com.narahentai.app;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class ApiClient {
 
-    private static final OkHttpClient client = new OkHttpClient();
-    private static final Gson gson = new Gson();
+    public static List<VideoItem> fetchPosts(String apiUrl) throws Exception {
+        String json = httpGet(apiUrl);
+        JSONObject root = new JSONObject(json);
+        JSONArray items = root.getJSONArray("items");
 
-    public static List<VideoItem> fetchPosts(String apiUrl) throws IOException {
-        Request req = new Request.Builder().url(apiUrl).build();
-        try (Response res = client.newCall(req).execute()) {
-            if (!res.isSuccessful() || res.body() == null) throw new IOException("HTTP " + res.code());
-            String body = res.body().string();
+        List<VideoItem> list = new ArrayList<>();
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject o = items.getJSONObject(i);
 
-            JsonObject root = gson.fromJson(body, JsonObject.class);
-            JsonArray items = root.getAsJsonArray("items");
+            String title = o.optString("title", "Untitled");
+            String thumb = o.optString("thumbnail_url", "");
+            int duration = o.optInt("duration_minutes", 0);
+            int views = o.optInt("views", 0);
 
-            List<VideoItem> out = new ArrayList<>();
-            for (int i = 0; i < items.size(); i++) {
-                VideoItem v = gson.fromJson(items.get(i), VideoItem.class);
-                out.add(v);
-            }
-            return out;
+            // sumber video URL lu mau gimana:
+            // kalau API lu udah punya field video_url, pake itu:
+            String videoUrl = o.optString("video_url", "");
+
+            // kalau BELUM punya video_url tapi punya "id", lu bisa bikin dari pattern videy:
+            // String id = o.optString("id", "");
+            // String videoUrl = "https://cdn.videy.co/v/=?id=" + id + ".mp4";
+
+            list.add(new VideoItem(title, thumb, videoUrl, duration, views));
         }
+
+        return list;
+    }
+
+    private static String httpGet(String urlStr) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+        conn.setConnectTimeout(15000);
+        conn.setReadTimeout(20000);
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
+
+        InputStream is = conn.getResponseCode() >= 200 && conn.getResponseCode() < 300
+                ? conn.getInputStream()
+                : conn.getErrorStream();
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) sb.append(line);
+        br.close();
+        conn.disconnect();
+        return sb.toString();
     }
 }
