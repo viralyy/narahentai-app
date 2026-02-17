@@ -15,9 +15,7 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
 
-        <activity
-            android:name=".SearchActivity"
-            android:exported="false"/>
+        <!-- ✅ SearchActivity sementara dihapus biar ga crash -->
 
         <activity
             android:name=".MainActivity"
