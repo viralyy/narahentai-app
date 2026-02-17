@@ -2,42 +2,47 @@ package com.narahentai.app;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
 public class PlayerActivity extends AppCompatActivity {
 
-    public static final String EXTRA_URL = "url";
-    public static final String EXTRA_TITLE = "title";
-
     private ExoPlayer player;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        String url = getIntent().getStringExtra(EXTRA_URL);
-        String title = getIntent().getStringExtra(EXTRA_TITLE);
+        hideSystemBars();
 
-        TextView tvTitle = findViewById(R.id.playerTitle);
-        tvTitle.setText(title != null ? title : "");
-
-        PlayerView playerView = findViewById(R.id.playerView);
+        String url = getIntent().getStringExtra("url");
+        PlayerView pv = findViewById(R.id.playerView);
 
         player = new ExoPlayer.Builder(this).build();
-        playerView.setPlayer(player);
+        pv.setPlayer(player);
 
         if (url != null && !url.isEmpty()) {
             MediaItem mediaItem = MediaItem.fromUri(Uri.parse(url));
             player.setMediaItem(mediaItem);
             player.prepare();
             player.play();
+        }
+    }
+
+    private void hideSystemBars() {
+        if (android.os.Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController c = getWindow().getInsetsController();
+            if (c != null) {
+                c.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                c.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
         }
     }
 
