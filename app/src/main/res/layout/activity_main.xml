@@ -2,27 +2,46 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
+    android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
+    <!-- Top App Bar YouTube style -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:title="Narahentai"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+        app:navigationIcon="@drawable/ic_logo_stub"
+        app:contentInsetStartWithNavigation="0dp"
+        app:layout_scrollFlags="scroll|enterAlways"/>
+
+    <!-- Content -->
     <FrameLayout
-        android:id="@+id/fragmentContainer"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/bottom_nav_height"/>
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="64dp"/>
 
+    <!-- Bottom nav -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_nav_height"
+        android:layout_height="64dp"
         android:layout_gravity="bottom"
-        android:background="@color/nav_bg"
-        app:itemIconSize="@dimen/bottom_nav_icon"
-        app:itemTextAppearanceActive="@style/NavText"
-        app:itemTextAppearanceInactive="@style/NavText"
-        app:itemRippleColor="@android:color/transparent"
-        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"
-        app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView"/>
+        app:labelVisibilityMode="labeled"
+        app:itemIconSize="26dp"
+        app:itemTextAppearanceActive="@style/NavTextActive"
+        app:itemTextAppearanceInactive="@style/NavTextInactive"
+        app:itemRippleColor="@android:color/transparent"
+        app:itemPaddingTop="8dp"
+        app:itemPaddingBottom="8dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
