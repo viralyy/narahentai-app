@@ -19,7 +19,6 @@ public class ApiClient {
         JSONArray items = root.getJSONArray("items");
 
         List<VideoItem> list = new ArrayList<>();
-
         for (int i = 0; i < items.length(); i++) {
             JSONObject o = items.getJSONObject(i);
 
@@ -28,20 +27,10 @@ public class ApiClient {
             int duration = o.optInt("duration_minutes", 0);
             int views = o.optInt("views", 0);
 
-            // ambil field yang mungkin ada di API lu
+            // ✅ dari backend yang baru
             String videoUrl = o.optString("video_url", "");
-            String videoId  = o.optString("video_id", "");     // saran: simpan ini di backend kalau gak mau simpan url full
-            String slug     = o.optString("slug", "");
 
-            list.add(new VideoItem(
-                    title,
-                    thumb,
-                    videoUrl,
-                    videoId,
-                    slug,
-                    duration,
-                    views
-            ));
+            list.add(new VideoItem(title, thumb, videoUrl, duration, views));
         }
 
         return list;
