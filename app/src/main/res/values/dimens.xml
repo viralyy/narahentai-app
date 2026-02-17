@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- YouTube-ish bottom nav -->
+    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="bottom_nav_icon_size">26dp</dimen>
+    <dimen name="bottom_nav_text_size">12sp</dimen>
+</resources>
