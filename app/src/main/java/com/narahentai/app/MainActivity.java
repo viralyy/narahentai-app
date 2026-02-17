@@ -42,11 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private final String HISTORY = "https://narahentai.pages.dev/?history=1";
     private final String PROFILE = "https://narahentai.pages.dev/?profile=1";
 
-    // UI
     private ProgressBar pageProgress;
     private ImageButton btnRefresh;
 
-    // Player (YouTube-ish)
     private ExoPlayer player;
     private PlayerView playerView;
     private BottomSheetBehavior<View> sheet;
@@ -56,11 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView miniSub;
     private ImageButton btnPlayPause;
     private ImageButton btnClose;
-
-    // current item cache
-    private String currentVideoUrl = "";
-    private String currentTitle = "";
-    private String currentThumbUrl = "";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -77,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
 
-        // polish biar kerasa app
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setSupportZoom(false);
@@ -85,12 +77,11 @@ public class MainActivity extends AppCompatActivity {
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
 
-        // "app mode" flag (buat beda tampilan 1 URL)
+        // app mode
         settings.setUserAgentString(settings.getUserAgentString() + " NarahentaiApp");
 
         webView.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
 
-        // loading progress tipis
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -103,14 +94,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // intercept watch link -> native play
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 String url = uri.toString();
 
-                // tangkap /watch.html?slug=xxx
+                // ✅ tangkap watch.html?slug=xxx -> play native
                 if (url.contains("/watch.html") && url.contains("slug=")) {
                     String slug = uri.getQueryParameter("slug");
                     if (slug != null && !slug.isEmpty()) {
@@ -119,9 +109,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // keep http/https inside app
                 if (url.startsWith("http://") || url.startsWith("https://")) return false;
-
                 return false;
             }
         });
@@ -145,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         sheet.setPeekHeight(dp(64));
         sheet.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        // tap miniBar = expand
+        // tap mini bar -> expand
         findViewById(R.id.miniBar).setOnClickListener(v -> {
             if (sheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                 sheet.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -163,9 +151,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnClose.setOnClickListener(v -> {
-            stopAndHidePlayer();
-        });
+        btnClose.setOnClickListener(v -> stopAndHidePlayer());
 
         // --- Bottom nav
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
@@ -187,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        // load awal
         webView.loadUrl(HOME);
     }
 
@@ -197,13 +182,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopAndHidePlayer() {
-        try {
-            if (player != null) player.stop();
-        } catch (Exception ignored) {}
+        try { if (player != null) player.stop(); } catch (Exception ignored) {}
         sheet.setState(BottomSheetBehavior.STATE_HIDDEN);
-        currentVideoUrl = "";
-        currentTitle = "";
-        currentThumbUrl = "";
         miniTitle.setText("Video");
         miniSub.setText("Narahentai");
         miniThumb.setImageBitmap(null);
@@ -231,15 +211,12 @@ public class MainActivity extends AppCompatActivity {
                 long views = obj.optLong("views", 0);
 
                 runOnUiThread(() -> {
-                    currentTitle = title;
-                    currentVideoUrl = videoUrl;
-                    currentThumbUrl = thumbUrl;
-
                     miniTitle.setText(title);
                     miniSub.setText(views + " views");
                     btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
-
                     loadThumbAsync(thumbUrl);
+
+                    // ✅ Play + langsung gede (YouTube)
                     playUrl(videoUrl);
                 });
 
@@ -261,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
         player.prepare();
         player.play();
 
-        // muncul mini dulu
-        sheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        // ✅ INI KUNCI: langsung expanded
+        sheet.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void loadThumbAsync(String thumbUrl) {
@@ -288,28 +265,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // YouTube-ish: expanded -> collapse
+        // YouTube feel:
+        // expanded -> mini
         if (sheet != null && sheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             sheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
             return;
         }
-        // collapse -> hide (close player)
+        // mini -> close
         if (sheet != null && sheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             stopAndHidePlayer();
             return;
         }
-        // web back
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+
+        if (webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // pause biar hemat
         if (player != null && player.isPlaying()) {
             player.pause();
             btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
@@ -324,4 +298,4 @@ public class MainActivity extends AppCompatActivity {
             player = null;
         }
     }
-}
+            }
