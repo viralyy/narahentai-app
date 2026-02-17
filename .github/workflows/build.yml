@@ -7,10 +7,11 @@ on:
 
 jobs:
   build:
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -18,6 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
@@ -25,22 +27,29 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # Decode keystore from GitHub Secrets (base64) -> file
       - name: Restore keystore from secret
         run: |
-          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > "$GITHUB_WORKSPACE/narahentai.keystore"
-          ls -la "$GITHUB_WORKSPACE/narahentai.keystore"
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
+          ls -la
 
+      # Build + sign using injected signing params (no need signingConfigs in build.gradle)
       - name: Build Signed Release APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/narahentai.keystore" \
+          ./gradlew clean assembleRelease \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/narahentai.keystore \
             -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+      # Optional: show output folder for debugging
+      - name: List APK outputs
+        run: |
+          ls -la app/build/outputs/apk/release || true
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
