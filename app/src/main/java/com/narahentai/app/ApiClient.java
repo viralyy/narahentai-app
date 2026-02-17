@@ -19,6 +19,7 @@ public class ApiClient {
         JSONArray items = root.getJSONArray("items");
 
         List<VideoItem> list = new ArrayList<>();
+
         for (int i = 0; i < items.length(); i++) {
             JSONObject o = items.getJSONObject(i);
 
@@ -27,15 +28,20 @@ public class ApiClient {
             int duration = o.optInt("duration_minutes", 0);
             int views = o.optInt("views", 0);
 
-            // sumber video URL lu mau gimana:
-            // kalau API lu udah punya field video_url, pake itu:
+            // ambil field yang mungkin ada di API lu
             String videoUrl = o.optString("video_url", "");
+            String videoId  = o.optString("video_id", "");     // saran: simpan ini di backend kalau gak mau simpan url full
+            String slug     = o.optString("slug", "");
 
-            // kalau BELUM punya video_url tapi punya "id", lu bisa bikin dari pattern videy:
-            // String id = o.optString("id", "");
-            // String videoUrl = "https://cdn.videy.co/v/=?id=" + id + ".mp4";
-
-            list.add(new VideoItem(title, thumb, videoUrl, duration, views));
+            list.add(new VideoItem(
+                    title,
+                    thumb,
+                    videoUrl,
+                    videoId,
+                    slug,
+                    duration,
+                    views
+            ));
         }
 
         return list;
@@ -48,7 +54,7 @@ public class ApiClient {
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Accept", "application/json");
 
-        InputStream is = conn.getResponseCode() >= 200 && conn.getResponseCode() < 300
+        InputStream is = (conn.getResponseCode() >= 200 && conn.getResponseCode() < 300)
                 ? conn.getInputStream()
                 : conn.getErrorStream();
 
