@@ -1,57 +1,81 @@
 package com.narahentai.app;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.appbar.MaterialToolbar;
+
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
 public class PlayerActivity extends AppCompatActivity {
 
+    private static final String EXTRA_URL = "url";
+    private static final String EXTRA_TITLE = "title";
+    private static final String EXTRA_META = "meta";
+
     private ExoPlayer player;
+
+    public static void open(Context ctx, String url, String title, String meta) {
+        Intent i = new Intent(ctx, PlayerActivity.class);
+        i.putExtra(EXTRA_URL, url);
+        i.putExtra(EXTRA_TITLE, title);
+        i.putExtra(EXTRA_META, meta);
+        ctx.startActivity(i);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        hideSystemBars();
+        String url = getIntent().getStringExtra(EXTRA_URL);
+        String title = getIntent().getStringExtra(EXTRA_TITLE);
+        String meta = getIntent().getStringExtra(EXTRA_META);
 
-        String url = getIntent().getStringExtra("url");
+        MaterialToolbar tb = findViewById(R.id.playerToolbar);
+        tb.setTitle(title != null ? title : "Player");
+        tb.setNavigationOnClickListener(v -> finish());
+
+        TextView txtTitle = findViewById(R.id.txtTitle);
+        TextView txtMeta = findViewById(R.id.txtMeta);
+        txtTitle.setText(title != null ? title : "");
+        txtMeta.setText(meta != null ? meta : "");
+
         PlayerView pv = findViewById(R.id.playerView);
 
         player = new ExoPlayer.Builder(this).build();
         pv.setPlayer(player);
 
-        if (url != null && !url.isEmpty()) {
-            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(url));
-            player.setMediaItem(mediaItem);
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlayerError(PlaybackException error) {
+                txtMeta.setText("Gagal play: " + error.getMessage());
+            }
+        });
+
+        if (url != null && !url.trim().isEmpty()) {
+            player.setMediaItem(MediaItem.fromUri(Uri.parse(url)));
             player.prepare();
             player.play();
-        }
-    }
-
-    private void hideSystemBars() {
-        if (android.os.Build.VERSION.SDK_INT >= 30) {
-            WindowInsetsController c = getWindow().getInsetsController();
-            if (c != null) {
-                c.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
-                c.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-            }
+        } else {
+            txtMeta.setText("URL kosong (cek API video_url)");
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (player != null) {
-            player.pause();
-        }
+        if (player != null) player.pause();
     }
 
     @Override
@@ -62,4 +86,4 @@ public class PlayerActivity extends AppCompatActivity {
             player = null;
         }
     }
-}
+        }
