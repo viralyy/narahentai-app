@@ -10,56 +10,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: "temurin"
           java-version: "17"
 
-      # Pakai Gradle Wrapper dari repo (bukan install gradle manual)
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+      # Android SDK + Build Tools (buat zipalign/apksigner)
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
+      - name: Install Android Build Tools
+        run: |
+          sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-34"
+
+      # Restore keystore dari GitHub Secrets (base64)
       - name: Restore keystore from secret
         run: |
           echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
 
-      - name: Build release (unsigned)
-        run: ./gradlew :app:assembleRelease --no-daemon
+      # Build APK release (unsigned)
+      - name: Build Release (unsigned)
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease
 
-      # Zipalign + apksigner (v2/v3) biar APK valid
-      - name: Zipalign + Sign (v2/v3)
+      # Zipalign + Sign pake apksigner (hasil final narahentai.apk)
+      - name: Zipalign + Sign APK
         env:
           KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASS: ${{ secrets.KEY_PASSWORD }}
         run: |
           UNSIGNED="app/build/outputs/apk/release/app-release-unsigned.apk"
-          ALIGNED="app-release-aligned.apk"
-          SIGNED="narahentai-release.apk"
+          ALIGNED="narahentai-aligned.apk"
+          SIGNED="narahentai.apk"
 
-          # cari build-tools terbaru
-          BUILD_TOOLS_DIR="$(ls -d $ANDROID_SDK_ROOT/build-tools/* | sort -V | tail -n 1)"
-          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
-          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
+          # zipalign
+          "$ANDROID_HOME/build-tools/34.0.0/zipalign" -v -p 4 "$UNSIGNED" "$ALIGNED"
 
-          "$ZIPALIGN" -v -p 4 "$UNSIGNED" "$ALIGNED"
-
-          "$APKSIGNER" sign \
+          # apksigner (v2/v3)
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" sign \
             --ks narahentai.keystore \
             --ks-key-alias "$KEY_ALIAS" \
-            --ks-pass pass:"$KS_PASS" \
-            --key-pass pass:"$KEY_PASS" \
+            --ks-pass "pass:$KS_PASS" \
+            --key-pass "pass:$KEY_PASS" \
             --out "$SIGNED" \
             "$ALIGNED"
 
-          "$APKSIGNER" verify --verbose "$SIGNED"
+          # verifikasi signature
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose "$SIGNED"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: narahentai-release
-          path: narahentai-release.apk
+          name: narahentai-apk
+          path: narahentai.apk
