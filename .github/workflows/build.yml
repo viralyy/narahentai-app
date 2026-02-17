@@ -29,33 +29,20 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
 
-      - name: Build Release (unsigned)
-        run: ./gradlew :app:assembleRelease
-
-      - name: Zipalign + Sign (v2/v3) with apksigner
+      - name: Build Signed Release APK
         env:
-          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          UNSIGNED="app/build/outputs/apk/release/app-release.apk"
-          ALIGNED="app-release-aligned.apk"
-          SIGNED="narahentai-release.apk"
-
-          zipalign -v -p 4 "$UNSIGNED" "$ALIGNED"
-
-          apksigner sign \
-            --ks narahentai.keystore \
-            --ks-pass env:KS_PASS \
-            --ks-key-alias "$KEY_ALIAS" \
-            --key-pass env:KEY_PASS \
-            --out "$SIGNED" \
-            "$ALIGNED"
-
-          apksigner verify --verbose "$SIGNED"
+          ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file=narahentai.keystore \
+          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
         with:
           name: narahentai-release
-          path: narahentai-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
