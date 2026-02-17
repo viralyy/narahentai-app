@@ -20,8 +20,11 @@ public class MainActivity extends AppCompatActivity {
 
         topAppBar = findViewById(R.id.topAppBar);
 
-        // menu search (kanan)
+        // ✅ pastiin gak ada icon kiri (logo/back) & gak ada menu bawaan
+        topAppBar.setNavigationIcon(null);
         topAppBar.getMenu().clear();
+
+        // ✅ icon search di kanan
         topAppBar.inflateMenu(R.menu.top_appbar_menu);
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_search) {
