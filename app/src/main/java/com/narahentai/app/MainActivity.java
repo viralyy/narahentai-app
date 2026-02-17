@@ -1,14 +1,37 @@
 package com.narahentai.app;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
+
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,43 +42,135 @@ public class MainActivity extends AppCompatActivity {
     private final String HISTORY = "https://narahentai.pages.dev/?history=1";
     private final String PROFILE = "https://narahentai.pages.dev/?profile=1";
 
+    // UI
+    private ProgressBar pageProgress;
+    private ImageButton btnRefresh;
+
+    // Player (YouTube-ish)
+    private ExoPlayer player;
+    private PlayerView playerView;
+    private BottomSheetBehavior<View> sheet;
+
+    private ImageView miniThumb;
+    private TextView miniTitle;
+    private TextView miniSub;
+    private ImageButton btnPlayPause;
+    private ImageButton btnClose;
+
+    // current item cache
+    private String currentVideoUrl = "";
+    private String currentTitle = "";
+    private String currentThumbUrl = "";
+
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ✅ Fullscreen immersive (biar terasa app banget)
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-        );
+        pageProgress = findViewById(R.id.pageProgress);
+        btnRefresh = findViewById(R.id.btnRefresh);
 
+        // --- WebView setup
         webView = findViewById(R.id.webView);
-
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
 
-        // ✅ Disable zoom (biar gak terasa web)
+        // polish biar kerasa app
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
-        settings.setSupportZoom(false);
+        settings.setMediaPlaybackRequiresUserGesture(false);
 
-        // Biar semua link tetap di dalam app
-        webView.setWebViewClient(new WebViewClient());
+        // "app mode" flag (buat beda tampilan 1 URL)
+        settings.setUserAgentString(settings.getUserAgentString() + " NarahentaiApp");
 
-        // Load halaman awal
-        webView.loadUrl(HOME);
+        webView.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
 
+        // loading progress tipis
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress >= 100) {
+                    pageProgress.setVisibility(View.GONE);
+                } else {
+                    if (pageProgress.getVisibility() != View.VISIBLE) pageProgress.setVisibility(View.VISIBLE);
+                    pageProgress.setProgress(newProgress);
+                }
+            }
+        });
+
+        // intercept watch link -> native play
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                String url = uri.toString();
+
+                // tangkap /watch.html?slug=xxx
+                if (url.contains("/watch.html") && url.contains("slug=")) {
+                    String slug = uri.getQueryParameter("slug");
+                    if (slug != null && !slug.isEmpty()) {
+                        openNativePlayerBySlug(slug);
+                        return true;
+                    }
+                }
+
+                // keep http/https inside app
+                if (url.startsWith("http://") || url.startsWith("https://")) return false;
+
+                return false;
+            }
+        });
+
+        btnRefresh.setOnClickListener(v -> webView.reload());
+
+        // --- Player setup
+        playerView = findViewById(R.id.playerView);
+        miniThumb = findViewById(R.id.miniThumb);
+        miniTitle = findViewById(R.id.miniTitle);
+        miniSub = findViewById(R.id.miniSub);
+        btnPlayPause = findViewById(R.id.btnPlayPause);
+        btnClose = findViewById(R.id.btnClose);
+
+        player = new ExoPlayer.Builder(this).build();
+        playerView.setPlayer(player);
+
+        View sheetView = findViewById(R.id.playerSheet);
+        sheet = BottomSheetBehavior.from(sheetView);
+        sheet.setHideable(true);
+        sheet.setPeekHeight(dp(64));
+        sheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        // tap miniBar = expand
+        findViewById(R.id.miniBar).setOnClickListener(v -> {
+            if (sheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                sheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
+
+        btnPlayPause.setOnClickListener(v -> {
+            if (player == null) return;
+            if (player.isPlaying()) {
+                player.pause();
+                btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+            } else {
+                player.play();
+                btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+            }
+        });
+
+        btnClose.setOnClickListener(v -> {
+            stopAndHidePlayer();
+        });
+
+        // --- Bottom nav
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-
             if (id == R.id.nav_home) {
                 webView.loadUrl(HOME);
                 return true;
@@ -69,17 +184,144 @@ public class MainActivity extends AppCompatActivity {
                 webView.loadUrl(PROFILE);
                 return true;
             }
-
             return false;
         });
+
+        // load awal
+        webView.loadUrl(HOME);
+    }
+
+    private int dp(int v) {
+        float d = getResources().getDisplayMetrics().density;
+        return Math.round(v * d);
+    }
+
+    private void stopAndHidePlayer() {
+        try {
+            if (player != null) player.stop();
+        } catch (Exception ignored) {}
+        sheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+        currentVideoUrl = "";
+        currentTitle = "";
+        currentThumbUrl = "";
+        miniTitle.setText("Video");
+        miniSub.setText("Narahentai");
+        miniThumb.setImageBitmap(null);
+        btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+    }
+
+    private void openNativePlayerBySlug(String slug) {
+        new Thread(() -> {
+            try {
+                String api = "https://narahentai.pages.dev/api/post?slug=" + Uri.encode(slug);
+                HttpURLConnection conn = (HttpURLConnection) new URL(api).openConnection();
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) sb.append(line);
+                br.close();
+
+                JSONObject obj = new JSONObject(sb.toString());
+                String title = obj.optString("title", "Video");
+                String videoUrl = obj.optString("video_url", "");
+                String thumbUrl = obj.optString("thumbnail_url", "");
+                long views = obj.optLong("views", 0);
+
+                runOnUiThread(() -> {
+                    currentTitle = title;
+                    currentVideoUrl = videoUrl;
+                    currentThumbUrl = thumbUrl;
+
+                    miniTitle.setText(title);
+                    miniSub.setText(views + " views");
+                    btnPlayPause.setImageResource(android.R.drawable.ic_media_pause);
+
+                    loadThumbAsync(thumbUrl);
+                    playUrl(videoUrl);
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    miniTitle.setText("Gagal load video");
+                    miniSub.setText("Coba lagi");
+                    sheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                });
+            }
+        }).start();
+    }
+
+    private void playUrl(String url) {
+        if (url == null || url.isEmpty()) return;
+
+        MediaItem item = MediaItem.fromUri(Uri.parse(url));
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
+
+        // muncul mini dulu
+        sheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void loadThumbAsync(String thumbUrl) {
+        if (thumbUrl == null || thumbUrl.trim().isEmpty()) {
+            miniThumb.setImageBitmap(null);
+            return;
+        }
+        new Thread(() -> {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(thumbUrl).openConnection();
+                conn.setConnectTimeout(12000);
+                conn.setReadTimeout(12000);
+                conn.connect();
+                BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+                Bitmap bmp = BitmapFactory.decodeStream(bis);
+                bis.close();
+                runOnUiThread(() -> miniThumb.setImageBitmap(bmp));
+            } catch (Exception e) {
+                runOnUiThread(() -> miniThumb.setImageBitmap(null));
+            }
+        }).start();
     }
 
     @Override
     public void onBackPressed() {
+        // YouTube-ish: expanded -> collapse
+        if (sheet != null && sheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            sheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            return;
+        }
+        // collapse -> hide (close player)
+        if (sheet != null && sheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            stopAndHidePlayer();
+            return;
+        }
+        // web back
         if (webView.canGoBack()) {
             webView.goBack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // pause biar hemat
+        if (player != null && player.isPlaying()) {
+            player.pause();
+            btnPlayPause.setImageResource(android.R.drawable.ic_media_play);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (player != null) {
+            player.release();
+            player = null;
         }
     }
 }
