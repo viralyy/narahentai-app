@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,9 +44,10 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         VideoItem it = items.get(position);
 
+        String dur = it.durationText(); // ✅ method
         h.txtTitle.setText(it.title);
-        h.txtMeta.setText(it.views + " views • " + it.durationText);
-        h.txtDuration.setText(it.durationText);
+        h.txtMeta.setText(it.views + " views • " + dur);
+        h.txtDuration.setText(dur);
 
         Glide.with(h.itemView.getContext())
                 .load(it.thumbnailUrl)
@@ -53,7 +55,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VH> {
                 .into(h.imgThumb);
 
         h.itemView.setOnClickListener(v -> {
-            if (onVideoClick != null) onVideoClick.onClick(it);
+            // ✅ pastiin URL playable ada
+            String url = it.playableUrl();
+            if (url == null || url.trim().isEmpty()) {
+                Toast.makeText(v.getContext(), "Video URL kosong (cek API: video_url / video_id)", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (onVideoClick != null) {
+                onVideoClick.onClick(it);
+            } else {
+                // fallback: langsung buka player kalau lu belum set callback di fragment
+                PlayerActivity.open(
+                        v.getContext(),
+                        url,
+                        it.title,
+                        it.views + " views • " + dur
+                );
+            }
         });
 
         h.btnMore.setOnClickListener(v -> {
