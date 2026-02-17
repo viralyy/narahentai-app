@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#0B0B0F">
 
+    <!-- TOP BAR CLEAN -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
@@ -14,10 +15,13 @@
         app:title="Narahentai"
         app:titleTextColor="@android:color/white"
         app:titleCentered="false"
+        app:titleTextAppearance="@style/ToolbarTitleBold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/top_appbar_menu"/>
 
+    <!-- CONTENT -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
@@ -27,12 +31,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- BOTTOM NAV (3 MENU DOANG) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
         android:background="#0B0B0F"
-        app:itemIconSize="28dp"
+        app:itemIconSize="26dp"
         app:itemTextColor="@color/bottom_nav_text"
         app:itemIconTint="@color/bottom_nav_icon"
         app:labelVisibilityMode="labeled"
