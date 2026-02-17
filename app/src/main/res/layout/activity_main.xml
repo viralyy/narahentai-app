@@ -1,47 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:background="#0B0B0F">
 
-    <!-- Top App Bar YouTube style -->
+    <!-- TOP BAR (CUMA 1, NO REFRESH) -->
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="56dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:id="@+id/topAppBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="#0B0B0F"
         app:title="Narahentai"
-        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
-        app:navigationIcon="@drawable/ic_logo_stub"
-        app:contentInsetStartWithNavigation="0dp"
-        app:layout_scrollFlags="scroll|enterAlways"/>
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_logo"
+        app:navigationIconTint="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Content -->
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56dp"
-        android:layout_marginBottom="64dp"/>
+    <!-- CONTENT -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/topAppBar"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Bottom nav -->
+    <!-- BOTTOM NAV (TINGGI NORMAL, ICON GEDE, MIRIP YT) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_gravity="bottom"
-        app:menu="@menu/bottom_nav_menu"
+        android:background="#0B0B0F"
+        app:itemIconSize="28dp"
+        app:itemTextColor="@color/bottom_nav_text"
+        app:itemIconTint="@color/bottom_nav_icon"
         app:labelVisibilityMode="labeled"
-        app:itemIconSize="26dp"
-        app:itemTextAppearanceActive="@style/NavTextActive"
-        app:itemTextAppearanceInactive="@style/NavTextInactive"
-        app:itemRippleColor="@android:color/transparent"
-        app:itemPaddingTop="8dp"
-        app:itemPaddingBottom="8dp"/>
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
