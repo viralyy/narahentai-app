@@ -27,7 +27,8 @@ jobs:
 
       - name: Restore keystore from secret
         run: |
-          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > "$GITHUB_WORKSPACE/narahentai.keystore"
+          ls -la "$GITHUB_WORKSPACE/narahentai.keystore"
 
       - name: Build Signed Release APK
         env:
@@ -36,10 +37,10 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           ./gradlew assembleRelease \
-          -Pandroid.injected.signing.store.file=narahentai.keystore \
-          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/narahentai.keystore" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
