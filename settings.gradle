@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "narahentai-app"
-include(":app")
+include ":app"
