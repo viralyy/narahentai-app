@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="14dp">
+    android:paddingBottom="12dp">
 
-    <ImageView
-        android:id="@+id/thumb"
+    <!-- THUMB 16:9 -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:scaleType="centerCrop"
-        android:background="#222"/>
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="0"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="#111118">
 
+        <ImageView
+            android:id="@+id/thumb"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="thumb" />
+
+        <!-- badge durasi -->
+        <TextView
+            android:id="@+id/badgeDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="5:00"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:background="#CC000000" />
+    </FrameLayout>
+
+    <!-- META -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="10dp">
+        android:orientation="horizontal">
 
-        <!-- avatar channel (placeholder bulat) -->
+        <!-- avatar bulat dummy -->
         <View
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:background="@drawable/avatar_circle"/>
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -38,30 +61,32 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:text="Judul video"
+                android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:text="Judul Video"/>
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/meta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/text_secondary"
+                android:text="336 views • 5 menit"
+                android:textColor="#B3FFFFFF"
                 android:textSize="13sp"
-                android:text="1.2K views • 5 menit"/>
+                android:layout_marginTop="2dp"/>
         </LinearLayout>
 
+        <!-- menu 3 titik (dummy, biar mirip yt) -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:text="⋮"
-            android:textSize="22sp"
-            android:textColor="@color/text_primary"
-            android:paddingStart="10dp"/>
+            android:textColor="#B3FFFFFF"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginStart="8dp"/>
     </LinearLayout>
 
 </LinearLayout>
