@@ -26,15 +26,33 @@ jobs:
           unzip gradle-8.4-bin.zip
           echo "$PWD/gradle-8.4/bin" >> $GITHUB_PATH
 
-      - name: Build APK
-        run: gradle assembleDebug
-
-      - name: Rename APK
+      - name: Restore keystore from secret
         run: |
-          mv app/build/outputs/apk/debug/app-debug.apk narahentai.apk
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > narahentai.keystore
 
-      - name: Upload APK
+      - name: Build RELEASE (unsigned)
+        run: gradle assembleRelease
+
+      - name: Sign APK
+        env:
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          APK_IN="app/build/outputs/apk/release/app-release-unsigned.apk"
+          APK_OUT="narahentai-release.apk"
+
+          jarsigner -verbose \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore narahentai.keystore \
+            -storepass "$KS_PASS" \
+            -keypass "$KEY_PASS" \
+            "$APK_IN" "$KEY_ALIAS"
+
+          cp "$APK_IN" "$APK_OUT"
+
+      - name: Upload RELEASE APK
         uses: actions/upload-artifact@v4
         with:
-          name: narahentai
-          path: narahentai.apk
+          name: narahentai-release
+          path: narahentai-release.apk
