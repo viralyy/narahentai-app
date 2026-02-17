@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<resources>
 
-    <item
-        android:id="@+id/action_search"
-        android:title="Search"
-        android:icon="@android:drawable/ic_menu_search"
-        app:showAsAction="always" />
+    <!-- Base App Theme -->
+    <style name="Theme.Narahentai" parent="Theme.Material3.DayNight.NoActionBar">
 
-</menu>
+        <!-- Background utama -->
+        <item name="android:windowBackground">#0B0B0F</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#0B0B0F</item>
+        <item name="android:navigationBarColor">#0B0B0F</item>
+
+        <!-- Text color default -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#BDBDBD</item>
+
+        <!-- Disable default actionbar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
+
+</resources>
