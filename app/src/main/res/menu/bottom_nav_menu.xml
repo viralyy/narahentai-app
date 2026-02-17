@@ -4,17 +4,14 @@
         android:id="@+id/nav_home"
         android:title="Beranda"
         android:icon="@android:drawable/ic_menu_view"/>
-
     <item
-        android:id="@+id/nav_updates"
+        android:id="@+id/nav_update"
         android:title="Update"
         android:icon="@android:drawable/ic_menu_recent_history"/>
-
     <item
         android:id="@+id/nav_history"
         android:title="Riwayat"
         android:icon="@android:drawable/ic_menu_agenda"/>
-
     <item
         android:id="@+id/nav_profile"
         android:title="Profil"
