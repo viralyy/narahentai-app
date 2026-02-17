@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:background="#0B0B0F"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="12dp">
 
     <EditText
-        android:id="@+id/etSearch"
-        android:hint="Cari…"
+        android:id="@+id/input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="48dp"
+        android:hint="Cari video..."
+        android:textColor="@android:color/white"
+        android:textColorHint="#9AA0A6"
+        android:backgroundTint="#9AA0A6"/>
 
     <TextView
-        android:id="@+id/tvHint"
-        android:text="Ketik untuk mencari"
-        android:layout_marginTop="12dp"
+        android:id="@+id/info"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="(search basic dulu, next bisa dibuat filter real-time)"
+        android:textColor="#9AA0A6"
+        android:layout_marginTop="10dp"/>
 </LinearLayout>
