@@ -1,62 +1,26 @@
 package com.narahentai.app;
 
-import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    private MaterialToolbar topAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        topAppBar = findViewById(R.id.topAppBar);
-        setSupportActionBar(topAppBar);
-
-        topAppBar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_search) {
-                startActivity(new Intent(this, SearchActivity.class));
-                return true;
-            }
-            return false;
-        });
-
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
 
         if (savedInstanceState == null) {
-            topAppBar.setTitle("Narahentai");
             switchFragment(new HomeFragment());
-            bottomNav.setSelectedItemId(R.id.nav_home);
         }
 
         bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-
-            if (id == R.id.nav_home) {
-                topAppBar.setTitle("Narahentai");
-                switchFragment(new HomeFragment());
-                return true;
-
-            } else if (id == R.id.nav_update) {
-                topAppBar.setTitle("Update");
-                switchFragment(new UpdateFragment());
-                return true;
-
-            } else if (id == R.id.nav_profile) {
-                topAppBar.setTitle("Profil");
-                switchFragment(new ProfileFragment());
-                return true;
-            }
-
-            return false;
+            switchFragment(new HomeFragment());
+            return true;
         });
     }
 
