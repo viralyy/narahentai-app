@@ -3,6 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:label="Narahentai"
         android:icon="@mipmap/ic_launcher"
@@ -11,11 +12,18 @@
         android:theme="@style/Theme.Narahentai">
 
         <activity
+            android:name=".CrashActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".PlayerActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
 
-        <!-- ✅ SearchActivity sementara dihapus biar ga crash -->
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".MainActivity"
