@@ -1,3 +1,6 @@
+// Root build.gradle
 plugins {
+    // versi AGP aman buat Gradle 8.x
     id "com.android.application" version "8.2.2" apply false
+    id "com.android.library" version "8.2.2" apply false
 }
