@@ -1,21 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="android.permission.INTERNET"/>
+<manifest package="com.narahentai.app"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:allowBackup="true"
         android:label="Narahentai"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
-        <activity
-            android:name=".PlayerActivity"
-            android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="sensor" />
+        android:theme="@android:style/Theme.Black.NoTitleBar">
 
         <activity
             android:name=".MainActivity"
@@ -27,4 +16,5 @@
         </activity>
 
     </application>
+
 </manifest>
