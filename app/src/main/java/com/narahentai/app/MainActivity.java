@@ -1,7 +1,7 @@
 package com.narahentai.app;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,15 +19,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         topAppBar = findViewById(R.id.topAppBar);
+        setSupportActionBar(topAppBar);
 
-        topAppBar.setNavigationIcon(null);
-        topAppBar.getMenu().clear();
-        topAppBar.inflateMenu(R.menu.top_appbar_menu);
-
-        // ✅ sementara: klik search jangan buka activity dulu (biar ga crash)
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_search) {
-                Toast.makeText(this, "Search belum aktif", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, SearchActivity.class));
                 return true;
             }
             return false;
