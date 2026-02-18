@@ -5,6 +5,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +30,18 @@ public class HomeFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.recycler);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // padding bawah auto ngikut gesture/nav bar
+        ViewCompat.setOnApplyWindowInsetsListener(rv, (v, insets) -> {
+            Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(
+                    v.getPaddingLeft(),
+                    v.getPaddingTop(),
+                    v.getPaddingRight(),
+                    sys.bottom + dp(8) // aman + rapi
+            );
+            return insets;
+        });
+
         List<VideoItem> list = new ArrayList<>();
         VideoAdapter adapter = new VideoAdapter(list);
         rv.setAdapter(adapter);
@@ -43,5 +58,10 @@ public class HomeFragment extends Fragment {
                 });
             } catch (Exception ignored) {}
         });
+    }
+
+    private int dp(int v) {
+        float d = requireContext().getResources().getDisplayMetrics().density;
+        return (int) (v * d);
     }
 }
