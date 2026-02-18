@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <!-- APP THEME -->
     <style name="Theme.Narahentai" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">#0B0B0F</item>
         <item name="android:navigationBarColor">#0B0B0F</item>
         <item name="android:windowBackground">#0B0B0F</item>
-
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">#BDBDBD</item>
     </style>
 
-    <!-- TOOLBAR TITLE BOLD (buat MaterialToolbar) -->
-    <style name="ToolbarTitleBold">
+    <style name="TextAppearance.Narahentai.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">sans-serif</item>
     </style>
 
 </resources>
