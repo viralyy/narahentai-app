@@ -4,22 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B0B0F">
+    android:background="@color/app_bg">
 
-    <!-- TOP BAR: CUMA TITLE + SEARCH -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="#0B0B0F"
-        app:title="Narahentai"
-        app:titleCentered="true"
+        android:background="@color/app_bg"
         app:titleTextColor="@android:color/white"
+        app:titleCentered="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- CONTENT -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
         android:layout_width="0dp"
@@ -29,18 +26,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- BOTTOM NAV: 3 ITEM -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:background="#0B0B0F"
-        app:itemIconSize="28dp"
-        app:itemIconTint="@android:color/white"
-        app:itemTextColor="@android:color/white"
+        android:background="@color/app_bg"
+        app:itemIconSize="26dp"
         app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/bottom_nav_icon"
+        app:itemTextColor="@color/bottom_nav_text"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
