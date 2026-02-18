@@ -2,22 +2,14 @@
 <resources>
 
     <style name="Theme.Narahentai" parent="Theme.Material3.DayNight.NoActionBar">
-
-        <!-- Background -->
         <item name="android:windowBackground">#0B0B0F</item>
-
-        <!-- Status & Nav Bar -->
         <item name="android:statusBarColor">#0B0B0F</item>
         <item name="android:navigationBarColor">#0B0B0F</item>
-
-        <!-- Text -->
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">#BDBDBD</item>
 
-        <!-- No ActionBar -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
     </style>
 
 </resources>
