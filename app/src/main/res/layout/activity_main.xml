@@ -6,20 +6,18 @@
     android:layout_height="match_parent"
     android:background="#0B0B0F">
 
-    <!-- TOP BAR -->
+    <!-- TOP BAR: CUMA TITLE + SEARCH -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="#0B0B0F"
-        android:theme="@style/ThemeOverlay.Material3.Dark"
         app:title="Narahentai"
+        app:titleCentered="true"
         app:titleTextColor="@android:color/white"
-        app:titleCentered="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/top_appbar_menu" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- CONTENT -->
     <androidx.fragment.app.FragmentContainerView
@@ -29,21 +27,20 @@
         app:layout_constraintTop_toBottomOf="@id/topAppBar"
         app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- BOTTOM NAV -->
+    <!-- BOTTOM NAV: 3 ITEM -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:background="#0B0B0F"
-        app:itemIconSize="26dp"
+        app:itemIconSize="28dp"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
         app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/bottom_nav_icon"
-        app:itemTextColor="@color/bottom_nav_text"
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
