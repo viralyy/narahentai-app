@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <color name="app_bg">#0B0B0F</color>
-
-    <color name="bottom_nav_active">#FFFFFF</color>
-    <color name="bottom_nav_inactive">#8A8A8A</color>
-
-    <selector name="bottom_nav_icon">
-        <item android:color="@color/bottom_nav_active" android:state_checked="true"/>
-        <item android:color="@color/bottom_nav_inactive"/>
-    </selector>
-
-    <selector name="bottom_nav_text">
-        <item android:color="@color/bottom_nav_active" android:state_checked="true"/>
-        <item android:color="@color/bottom_nav_inactive"/>
-    </selector>
-
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/app_bg</item>
-        <item name="android:statusBarColor">@color/app_bg</item>
-        <item name="android:navigationBarColor">@color/app_bg</item>
+        <item name="android:windowBackground">#0B0B0F</item>
+        <item name="android:statusBarColor">#0B0B0F</item>
+        <item name="android:navigationBarColor">#0B0B0F</item>
         <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">#BDBDBD</item>
     </style>
 
 </resources>
