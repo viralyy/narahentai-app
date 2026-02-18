@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <color name="app_bg">#0B0B0F</color>
 
-    <!-- Bottom nav colors -->
     <color name="bottom_nav_active">#FFFFFF</color>
     <color name="bottom_nav_inactive">#8A8A8A</color>
 
@@ -17,25 +16,11 @@
         <item android:color="@color/bottom_nav_inactive"/>
     </selector>
 
-    <!-- App Theme -->
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/app_bg</item>
         <item name="android:statusBarColor">@color/app_bg</item>
         <item name="android:navigationBarColor">@color/app_bg</item>
-
         <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">#BDBDBD</item>
-
-        <!-- Make toolbar title bold by default -->
-        <item name="toolbarStyle">@style/AppToolbar</item>
-    </style>
-
-    <style name="AppToolbar" parent="Widget.Material3.Toolbar">
-        <item name="titleTextAppearance">@style/AppToolbarTitle</item>
-    </style>
-
-    <style name="AppToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
