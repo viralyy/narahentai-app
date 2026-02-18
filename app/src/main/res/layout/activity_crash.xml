@@ -4,39 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#0B0B0F"
-    android:padding="14dp">
+    android:padding="24dp">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="App Crash"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:textSize="18sp"/>
-
-    <ScrollView
+        android:id="@+id/txtError"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="12dp">
-
-        <TextView
-            android:id="@+id/txtCrash"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="#E6E6E6"
-            android:textSize="12sp"
-            android:typeface="monospace"
-            android:background="#111117"
-            android:padding="12dp"/>
-    </ScrollView>
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textIsSelectable="true"
+        android:text="Crash log muncul di sini" />
 
     <Button
         android:id="@+id/btnCopy"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="COPY"
-        android:textStyle="bold"
-        android:layout_marginTop="12dp"/>
+        android:layout_height="wrap_content"
+        android:text="Copy Log"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnRestart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Restart App"
+        android:layout_marginTop="12dp" />
 
 </LinearLayout>
